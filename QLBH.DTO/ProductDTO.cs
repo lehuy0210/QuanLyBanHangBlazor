@@ -11,11 +11,13 @@ namespace QLBH.DTO
 {
     public class ProductDTO
     {
-        [JsonProperty("Id")]
-        [JsonPropertyName("Id")]
+        [JsonPropertyName("ProductID")]
         public int Id { get; set; }
+        [JsonPropertyName("ProductName")]
         public string Name { get; set; }
+        [JsonPropertyName("UnitPrice")]
         public decimal Price { get; set; }
+        [JsonPropertyName("QuantityPerUnit")]
         public string Quantity { get; set; }
 
         public int CateId { get; set; }
