@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "tgNZftppmug=",
+  "dgSpecHash": "DsPVv8j7hSM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\ASUS\\Desktop\\Ôn tập\\QLBH.Web\\QLBH.DTO\\QLBH.DTO.csproj",
+  "projectFilePath": "C:\\Users\\ASUS\\Desktop\\Ôn tập\\QLBH.Blazor\\QLBH.DTO\\QLBH.DTO.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ASUS\\.nuget\\packages\\newtonsoft.json\\13.0.4\\newtonsoft.json.13.0.4.nupkg.sha512",
     "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.22\\microsoft.windowsdesktop.app.ref.8.0.22.nupkg.sha512",
