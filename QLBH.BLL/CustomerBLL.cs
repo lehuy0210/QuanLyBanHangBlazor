@@ -21,22 +21,22 @@ namespace QLBH.BLL
 
         public bool themKhachHang(CustomerDTO kh)
         {
-            if (kh.Name == null)
+            if (kh.Name == "")
             {
                 throw new Exception("Họ và tên không được để trống");
             }
 
-            if (kh.Username == null)
+            if (kh.Username == "")
             {
                 throw new Exception("Tên đăng nhập không được để trống");
             }
 
-            if (kh.Password == null)
+            if (kh.Password == "")
             {
                 throw new Exception("Mật khẩu không được đễ trống");
             }
 
-            if (kh.Phone == null)
+            if (kh.Phone == "")
             {
                 throw new Exception("Số điện thoại không được để trống");
             }
@@ -48,13 +48,13 @@ namespace QLBH.BLL
 
             for (int i = 0; i < kh.Phone.Length; i++)
             {
-                if (kh.Phone[i] < '0' && kh.Phone[i] > '9')
+                if (kh.Phone[i] < '0' || kh.Phone[i] > '9')
                 {
                     throw new Exception("Số điện thoại sai cú pháp");
                 }
             }
 
-            if(kh.Address == null)
+            if(kh.Address == "")
             {
                 throw new Exception("Địa chỉ không được để trống");
             }
@@ -75,17 +75,17 @@ namespace QLBH.BLL
 
         public bool suaKhachHang(CustomerDTO kh)
         {
-            if (kh.Name == null)
+            if (kh.Name == "")
             {
                 throw new Exception("Họ và tên không được để trống");
             }
 
-            if (kh.Password == null)
+            if (kh.Password == "")
             {
                 throw new Exception("Mật khẩu không được đễ trống");
             }
 
-            if (kh.Phone == null)
+            if (kh.Phone == "")
             {
                 throw new Exception("Số điện thoại không được để trống");
             }
@@ -97,13 +97,13 @@ namespace QLBH.BLL
 
             for (int i = 0; i < kh.Phone.Length; i++)
             {
-                if (kh.Phone[i] < '0' && kh.Phone[i] > '9')
+                if (kh.Phone[i] < '0' || kh.Phone[i] > '9')
                 {
                     throw new Exception("Số điện thoại sai cú pháp");
                 }
             }
 
-            if (kh.Address == null)
+            if (kh.Address == "")
             {
                 throw new Exception("Địa chỉ không được để trống");
             }
