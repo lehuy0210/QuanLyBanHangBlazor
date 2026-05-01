@@ -1,0 +1,42 @@
+﻿@page "/products"
+@using QLBH.DTO
+@using QLBH.WEB.Services
+@inject ProductService ProductService
+
+<h3>Quản lý sản phẩm</h3>
+
+@if (products == null)
+{
+    <p><em>Đang tải dữ liệu...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tên SP</th>
+                <th>Giá</th>
+                <th>Tồn kho</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in products)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Price.ToString("N0") VNĐ</td>
+                    <td>@item.UnitsInStock</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ProductDTO> products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ProductService.GetProductsAsync();
+    }
+}
