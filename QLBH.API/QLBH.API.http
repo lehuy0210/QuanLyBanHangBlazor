@@ -1,0 +1,30 @@
+@QLBH.API_HostAddress = http://localhost:5003
+
+GET {{QLBH.API_HostAddress}}/api/Product/List
+Accept: application/json
+
+GET {{QLBH.API_HostAddress}}/api/Product/GetCategories
+Accept: application/json
+
+GET {{QLBH.API_HostAddress}}/api/Product/GetSuppliers
+Accept: application/json
+
+POST {{QLBH.API_HostAddress}}/api/Product/Create
+Content-Type: application/json
+
+GET {{QLBH.API_HostAddress}}/api/Product/GetByID?id=1
+Accept: application/json
+
+GET {{QLBH.API_HostAddress}}/api/Customer/List
+Accept: application/json
+
+POST {{QLBH.API_HostAddress}}/api/Customer/Create
+Accept: application/json
+
+GET {{QLBH.API_HostAddress}}/api/Customer/GetByID?id=1
+Accept: application/json
+
+
+
+
+###

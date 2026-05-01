@@ -1,0 +1,13 @@
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\bin\Debug\net8.0\QLBH.DTO.deps.json
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\bin\Debug\net8.0\QLBH.DTO.dll
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\bin\Debug\net8.0\QLBH.DTO.pdb
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\obj\Debug\net8.0\QLBH.DTO.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\obj\Debug\net8.0\QLBH.DTO.AssemblyInfoInputs.cache
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\obj\Debug\net8.0\QLBH.DTO.AssemblyInfo.cs
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\obj\Debug\net8.0\QLBH.DTO.csproj.CoreCompileInputs.cache
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\obj\Debug\net8.0\QLBH.DTO.sourcelink.json
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\obj\Debug\net8.0\QLBH.DTO.dll
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\obj\Debug\net8.0\refint\QLBH.DTO.dll
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\obj\Debug\net8.0\QLBH.DTO.pdb
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\obj\Debug\net8.0\ref\QLBH.DTO.dll
+C:\Users\ASUS\Desktop\Ôn tập\QLBH.Web\QLBH.DTO\obj\Debug\net8.0\QLBH.DTO.csproj.AssemblyReference.cache
