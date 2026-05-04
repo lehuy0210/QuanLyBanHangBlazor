@@ -38,5 +38,16 @@ namespace QLBH.WEB.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<ProductDTO> GetProductByIdAsync(int id)
+        {
+            return await _http.GetFromJsonAsync<ProductDTO>($"api/Product/{id}");
+        }
+
+        public async Task<bool> UpdateProductAsync(int id, ProductDTO sp)
+        {
+            var response = await _http.PutAsJsonAsync($"api/Product/{id}", sp);
+            return response.IsSuccessStatusCode;
+        }
+
     }
 }
