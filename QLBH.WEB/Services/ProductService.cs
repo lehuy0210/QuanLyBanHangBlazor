@@ -32,6 +32,11 @@ namespace QLBH.WEB.Services
             return await _http.GetFromJsonAsync<List<SupplierDTO>>("api/Product/suppliers");
         }
 
+        public async Task<bool> DeleteProductAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/Product/{id}");
+            return response.IsSuccessStatusCode;
+        }
 
     }
 }
