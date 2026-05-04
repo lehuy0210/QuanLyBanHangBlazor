@@ -2,6 +2,7 @@
 @using QLBH.DTO
 @using QLBH.WEB.Services
 @inject ProductService ProductService
+@inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -42,6 +43,7 @@ else
                     <td>@item.Quantity</td>
                     <td>@item.UnitsInStock</td>
                     <td class="text-center">
+                        <button class="btn btn-warning btn-sm" @onclick="() => GoToEdit(item.Id)">Sửa</button>
                         <button class="btn btn-danger btn-sm" @onclick="() => DeleteProduct(item.Id, item.Name)">Xóa</button>
                     </td>
                 </tr>
@@ -73,5 +75,10 @@ else
 
             await LoadData();
         }
+    }
+
+    private void GoToEdit(int id)
+    {
+        NavigationManager.NavigateTo($"/Product/Edit/{id}");
     }
 }
