@@ -1,7 +1,206 @@
 ﻿@page "/"
+@using QLBH.DTO
+@using QLBH.WEB.Services
+@inject ProductService ProductService
+@* Nếu ông có viết CartService để quản lý giỏ hàng thì inject thêm vào đây nhé *@
+@* @inject CartService CartService *@
+@inject NavigationManager NavigationManager
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Trang chủ</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container mt-4">
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Tuyệt vời!</strong> @successMessage
+            <button type="button" class="btn-close" @onclick="() => successMessage = string.Empty"></button>
+        </div>
+    }
 
-Welcome to your new app.
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Sản phẩm nổi bật</h1>
+        <p class="text-muted">Lựa chọn những sản phẩm chất lượng nhất từ cửa hàng của chúng tôi</p>
+    </div>
+
+    <div class="row mt-4">
+        <!-- BỘ LỌC SẢN PHẨM -->
+        <div class="col-md-3 col-xl-2 mb-4">
+            <div class="card shadow-sm border-0 bg-light h-100">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">Danh mục</label>
+                            <select class="form-select" @bind="selectedCatId">
+                                <option value="0">-- Tất cả --</option>
+                                @if (categories != null)
+                                {
+                                    @foreach (var cat in categories)
+                                    {
+                                        <option value="@cat.Id">@cat.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-bold">Nhà cung cấp</label>
+                            <select class="form-select" @bind="selectedSupId">
+                                <option value="0">-- Tất cả --</option>
+                                @if (suppliers != null)
+                                {
+                                    @foreach (var sup in suppliers)
+                                    {
+                                        <option value="@sup.Id">@sup.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-primary" @onclick="FilterProducts">
+                                    <i class="bi bi-funnel"></i> Lọc sản phẩm
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" @onclick="ClearFilter">Xóa lọc</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DANH SÁCH SẢN PHẨM -->
+        <div class="col-md-9 col-xl-10">
+            @if (displayedProducts == null)
+            {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p>Đang tải sản phẩm...</p>
+                </div>
+            }
+            else if (!displayedProducts.Any())
+            {
+                <div class="text-center py-5">
+                    <h4 class="text-muted">Hiện tại không có sản phẩm nào phù hợp với bộ lọc.</h4>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+                    @foreach (var item in displayedProducts)
+                    {
+                        <div class="col">
+                            <div class="card h-100 shadow-sm border-0">
+                                <img src="https://placehold.co/300x200?text=SP" class="card-img-top" alt="@item.Name">
+
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title fw-bold">@item.Name</h5>
+                                    <div class="mb-2">
+                                        <span class="badge bg-info text-dark">@item.CategoryName</span>
+                                        <small class="text-muted ms-1">Hãng: @item.CompanyName</small>
+                                    </div>
+                                    <p class="card-text text-muted small">Khối lượng: @item.Quantity</p>
+
+                                    <h5 class="card-text text-danger fw-bold mt-auto mb-3">
+                                        @item.Price.ToString("N0") đ
+                                    </h5>
+
+                                    <div class="d-flex align-items-center mt-3">
+                                        <div class="input-group input-group-sm me-2" style="width: 100px;">
+                                            <span class="input-group-text">SL</span>
+                                            <!-- Liên kết số lượng mua với Dictionary theo ID sản phẩm -->
+                                            <input type="number" class="form-control" min="1"
+                                                   @bind="quantities[item.Id]" />
+                                        </div>
+                                        <button type="button" class="btn btn-primary btn-sm flex-grow-1 shadow-sm"
+                                                @onclick="() => AddToCart(item)">
+                                            <i class="bi bi-cart-plus"></i> Mua ngay
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    // Biến lưu trữ dữ liệu gốc và dữ liệu hiển thị
+    private List<ProductDTO> allProducts;
+    private List<ProductDTO> displayedProducts;
+
+    private List<CategoryDTO> categories;
+    private List<SupplierDTO> suppliers;
+
+    // Thay thế form submit của MVC
+    private int selectedCatId = 0;
+    private int selectedSupId = 0;
+    private string successMessage = "";
+
+    // Mẹo Blazor: Dùng Dictionary để lưu trữ số lượng riêng biệt cho từng sản phẩm trên giao diện
+    private Dictionary<int, int> quantities = new Dictionary<int, int>();
+
+    //Hứng từ khóa tìm kiếm từ URL (?search=...)
+    [SupplyParameterFromQuery(Name = "search")]
+    public string SearchKeyword { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // 1. Lấy dữ liệu Dropdown
+        categories = await ProductService.GetCategoriesAsync();
+        suppliers = await ProductService.GetSuppliersAsync();
+
+        // 2. Lấy toàn bộ sản phẩm
+        allProducts = await ProductService.GetProductsAsync();
+
+        // 3. Khởi tạo mặc định số lượng mua = 1 cho tất cả sản phẩm
+        if (allProducts != null)
+        {
+            foreach (var p in allProducts)
+            {
+                quantities[p.Id] = 1;
+            }
+        }
+    }
+
+    //Hàm này tự động chạy mỗi khi URL thay đổi (VD: đang gõ thanh tìm kiếm)
+    protected override void OnParametersSet()
+    {
+        FilterProducts();
+    }
+
+    private void FilterProducts()
+    {
+        if (allProducts == null) return;
+
+        displayedProducts = allProducts.Where(p =>
+            (selectedCatId == 0 || p.CateId == selectedCatId) &&
+            (selectedSupId == 0 || p.SupId == selectedSupId) &&
+            // Lọc theo tên: Nếu ô tìm kiếm rỗng thì bỏ qua, nếu có thì kiểm tra chứa từ khóa (bỏ qua viết hoa/thường)
+            (string.IsNullOrEmpty(SearchKeyword) || p.Name.Contains(SearchKeyword, StringComparison.OrdinalIgnoreCase))
+        ).ToList();
+    }
+
+    private void ClearFilter()
+    {
+        selectedCatId = 0;
+        selectedSupId = 0;
+        NavigationManager.NavigateTo("/");
+    }
+
+    // Hàm thay thế cho form AddToCart của MVC
+    private void AddToCart(ProductDTO product)
+    {
+        // Lấy số lượng người dùng vừa nhập trên ô Input
+        int qty = quantities[product.Id];
+
+        // TODO: Chỗ này ông sẽ gọi CartService hoặc API thêm vào giỏ hàng
+        // await CartService.AddToCartAsync(product.Id, qty);
+
+        // Hiển thị thông báo (thay thế TempData["Success"] của MVC)
+        successMessage = $"Đã thêm {qty} sản phẩm '{product.Name}' vào giỏ hàng!";
+    }
+}
