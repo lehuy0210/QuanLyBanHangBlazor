@@ -1,16 +1,200 @@
 ﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@using QLBH.DTO
+@inject NavigationManager NavigationManager
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+@* TODO: Bỏ comment 2 dòng dưới này khi ông đã tạo xong Service quản lý Giỏ hàng và Đăng nhập *@
+@* @inject CartService CartService *@
+@* @inject AuthService AuthService *@
 
-        <article class="content px-4">
+<div class="bg-light min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm mb-4 py-3 sticky-top">
+            <div class="container">
+                <a class="navbar-brand fw-bold text-primary fs-4" href="/">
+                    <i class="bi bi-shop me-2"></i>NHOM20Store
+                </a>
+
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between align-items-center">
+                    <ul class="navbar-nav me-auto"></ul>
+
+                    @* THANH TÌM KIẾM Ở GIỮA *@
+                    <div class="mx-auto" style="max-width: 500px; width: 100%;">
+                        <div class="input-group shadow-sm rounded-pill overflow-hidden border border-primary">
+                            <input type="search"
+                                   class="form-control border-0 shadow-none px-4 py-2"
+                                   placeholder="Bạn tìm gì hôm nay?..." autocomplete="off"
+                                   @bind="searchKeyword"
+                                   @bind:event="oninput"
+                                   @onkeyup="HandleSearch" />
+
+                            <button class="btn btn-primary border-0 px-4" type="button" @onclick="ExecuteSearch">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    @* MENU PHẢI (GIỎ HÀNG & USER INFO) *@
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        
+                        @* Thêm Context="authState" để sửa lỗi "The name 'context' does not exist" *@
+                        <AuthorizeView Context="authState">
+                            <Authorized>
+                                @* ======= PHẦN NÀY CHỈ HIỆN KHI ĐÃ ĐĂNG NHẬP ======= *@
+                                <li class="nav-item dropdown me-4">
+                                    <a class="nav-link text-dark d-flex align-items-center dropdown-toggle" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown">
+                                        <div class="position-relative d-inline-block">
+                                            <i class="bi bi-cart3 fs-4"></i>
+                                            @if (countCart > 0)
+                                            {
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" style="font-size: 0.7rem; padding: 0.35em 0.5em;">
+                                                    @countCart
+                                                </span>
+                                            }
+                                        </div>
+                                        <span class="ms-2 fw-semibold">Giỏ hàng</span>
+                                    </a>
+
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2" style="width: 340px;">
+                                        <li><h6 class="dropdown-header text-center py-2 fw-bold text-primary">Giỏ hàng của bạn</h6></li>
+                                        <li><hr class="dropdown-divider mb-0"></li>
+
+                                        @if (currentCart == null || !currentCart.Any())
+                                        {
+                                            <li>
+                                                <div class="dropdown-item text-center text-muted py-4">
+                                                    <i class="bi bi-cart-x fs-1 text-light d-block mb-2"></i>
+                                                    Giỏ hàng đang trống
+                                                </div>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <div style="max-height: 300px; overflow-y: auto;">
+                                                    @foreach (var item in currentCart)
+                                                    {
+                                                        <div class="dropdown-item d-flex justify-content-between align-items-center py-3 border-bottom text-wrap">
+                                                            <div style="flex: 1;" class="pe-2">
+                                                                <span class="fw-bold d-block" style="font-size: 0.9rem;">@item.ProductName</span>
+                                                                <small class="text-muted">SL: @item.Quantity x @item.UnitPrice.ToString("N0")đ</small>
+                                                            </div>
+                                                            <div class="d-flex align-items-center ms-2">
+                                                                <span class="text-danger fw-bold pe-2 border-end">@((item.Quantity * item.UnitPrice).ToString("N0"))đ</span>
+                                                                <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none px-2" 
+                                                                        title="Xóa khỏi giỏ" @onclick="() => RemoveFromCart(item.ProductId)">
+                                                                    <i class="bi bi-trash3-fill"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </li>
+                                            <li class="p-3 bg-light rounded-bottom">
+                                                <a class="btn btn-primary w-100 fw-bold shadow-sm" href="/Order/Index">
+                                                    <i class="bi bi-credit-card me-2"></i>Thanh toán ngay
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link text-dark d-flex align-items-center dropdown-toggle cursor-pointer" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                        <img src="https://ui-avatars.com/api/?name=@(authState.User.Identity.Name ?? "User")&background=0D8ABC&color=fff&size=128&rounded=true&bold=true"
+                                             class="rounded-circle me-2 border border-primary border-opacity-25 shadow-sm" alt="Avatar" style="width: 35px; height: 35px; object-fit: cover;">
+                                        <span>Xin chào, <strong class="text-primary">@(authState.User.Identity.Name ?? "Bạn")</strong>!</span>
+                                    </a>
+
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                        <li><a class="dropdown-item py-2" href="/Customer/Information"><i class="bi bi-person-badge me-2 text-primary"></i>Thông tin cá nhân</a></li>
+                                        <li><a class="dropdown-item py-2" href="/Customer/OrderDetail"><i class="bi bi-box-seam me-2 text-primary"></i>Đơn hàng của tôi</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><button class="dropdown-item py-2 text-danger fw-bold" @onclick="Logout"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</button></li>
+                                    </ul>
+                                </li>
+                            </Authorized>
+
+                            <NotAuthorized>
+                                @* ======= PHẦN NÀY HIỆN KHI CHƯA ĐĂNG NHẬP ======= *@
+                                <li class="nav-item me-2">
+                                    <a class="btn btn-outline-primary fw-semibold rounded-pill px-4" href="/Account/Login">Đăng nhập</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="btn btn-primary fw-semibold rounded-pill px-4 shadow-sm" href="/Account/Register">Đăng ký</a>
+                                </li>
+                            </NotAuthorized>
+                        </AuthorizeView>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-5">
+            @* Content của các trang con (Index.razor, ProductList.razor...) sẽ chui vào đây *@
             @Body
-        </article>
-    </main>
+        </main>
+    </div>
 </div>
+
+@code {
+    // 1. Quản lý trạng thái Giỏ hàng (Tạm thời là list rỗng chờ API)
+    private int countCart => currentCart?.Sum(x => x.Quantity) ?? 0;
+    
+    // Đảm bảo ông có model OrderDTO. Nếu tên khác thì nhớ đổi lại nhé.
+    private List<OrderDTO> currentCart = new List<OrderDTO>();
+
+    // 2. Quản lý Tìm kiếm với cơ chế Debounce
+    private string searchKeyword = "";
+    private System.Timers.Timer debounceTimer;
+
+    protected override void OnInitialized()
+    {
+        // Setup timer 400ms: Khi người dùng dừng gõ phím 400ms thì mới bắt đầu tìm kiếm
+        debounceTimer = new System.Timers.Timer(400);
+        debounceTimer.Elapsed += async (sender, e) => await InvokeAsync(ExecuteSearch);
+        debounceTimer.AutoReset = false;
+
+        // TODO: Khi nào làm xong API, ông sẽ nạp giỏ hàng vào đây
+        // currentCart = await CartService.GetCartItemsAsync();
+    }
+
+    private void HandleSearch(KeyboardEventArgs e)
+    {
+        debounceTimer.Stop();
+        debounceTimer.Start();
+    }
+
+    private void ExecuteSearch()
+    {
+        // Chuyển hướng người dùng về trang chủ kèm theo tham số ?search=... trên URL
+        if (!string.IsNullOrWhiteSpace(searchKeyword))
+        {
+            NavigationManager.NavigateTo($"/?search={Uri.EscapeDataString(searchKeyword)}");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    private async Task RemoveFromCart(int productId)
+    {
+        // TODO: Viết code xóa item khỏi giỏ hàng ở đây
+        // await CartService.RemoveItemAsync(productId);
+        // currentCart = await CartService.GetCartItemsAsync(); // Load lại giỏ hàng
+    }
+
+    private void Logout()
+    {
+        // TODO: Gọi hàm xóa Token đăng nhập khỏi LocalStorage
+        // await AuthService.LogoutAsync();
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+}
