@@ -36,6 +36,14 @@ namespace QLBH.DTO
         [JsonPropertyName("UnitsInStock")]
         public int UnitsInStock { get; set; }
 
+        [JsonProperty("CategoryName")]
+        [JsonPropertyName("CategoryName")]
+        public string? CategoryName { get; set; }
+
+        [JsonProperty("CompanyName")]
+        [JsonPropertyName("CompanyName")]
+        public string? CompanyName { get; set; }
+
         public IEnumerable<CategoryDTO>? Categories { get; set; }
         public IEnumerable<SupplierDTO>? Suppliers { get; set; }
 
